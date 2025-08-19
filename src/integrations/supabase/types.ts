@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      captcha_sessions: {
+        Row: {
+          answer: number
+          created_at: string
+          expires_at: string
+          id: string
+          question: string
+          session_id: string
+          verified: boolean
+        }
+        Insert: {
+          answer: number
+          created_at?: string
+          expires_at: string
+          id?: string
+          question: string
+          session_id: string
+          verified?: boolean
+        }
+        Update: {
+          answer?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          question?: string
+          session_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       incidents: {
         Row: {
           created_at: string
@@ -147,7 +177,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_captcha_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
