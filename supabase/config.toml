@@ -1,1 +1,4 @@
 project_id = "stxrccnzyvuulsadjuob"
+
+[functions.captcha]
+verify_jwt = false

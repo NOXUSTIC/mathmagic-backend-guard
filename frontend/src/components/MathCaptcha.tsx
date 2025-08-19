@@ -21,11 +21,7 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('captcha', {
-        body: {},
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
       if (error) {
@@ -62,10 +58,6 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
         body: {
           sessionId,
           userAnswer: userAnswer.trim()
-        },
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
         },
       });
 

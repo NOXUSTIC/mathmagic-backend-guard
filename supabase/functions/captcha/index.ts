@@ -21,7 +21,7 @@ serve(async (req) => {
     const url = new URL(req.url);
     const action = url.searchParams.get('action');
 
-    if (action === 'generate') {
+    if (req.method === 'GET' || action === 'generate') {
       // Generate a new math captcha
       const operations = ['+', '-', '*'];
       const operation = operations[Math.floor(Math.random() * operations.length)];
@@ -85,7 +85,7 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
 
-    } else if (action === 'verify') {
+    } else if (req.method === 'POST') {
       // Verify captcha answer
       const { sessionId, userAnswer } = await req.json();
 
@@ -151,8 +151,8 @@ serve(async (req) => {
 
     } else {
       return new Response(
-        JSON.stringify({ error: 'Invalid action. Use ?action=generate or ?action=verify' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Invalid method. Use GET to generate or POST to verify' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
