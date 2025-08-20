@@ -65,7 +65,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
         .from('incidents')
         .select(`
           *,
-          profiles!incidents_user_id_fkey (full_name)
+          profiles (full_name)
         `)
         .order('created_at', { ascending: false });
 
@@ -87,11 +87,35 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
       setIncidents(transformedData);
     } catch (error) {
       console.error('Error fetching incidents:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch incidents",
-        variant: "destructive",
-      });
+      // If the join fails, fetch incidents without profile info
+      try {
+        let fallbackQuery = supabase
+          .from('incidents')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (userOnly && user) {
+          fallbackQuery = fallbackQuery.eq('user_id', user.id);
+        }
+
+        const { data: fallbackData, error: fallbackError } = await fallbackQuery;
+        
+        if (fallbackError) throw fallbackError;
+        
+        const fallbackTransformed: Incident[] = (fallbackData || []).map(item => ({
+          ...item,
+          profiles: null
+        }));
+        
+        setIncidents(fallbackTransformed);
+      } catch (fallbackError) {
+        console.error('Fallback query also failed:', fallbackError);
+        toast({
+          title: "Error",
+          description: "Failed to fetch incidents",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
