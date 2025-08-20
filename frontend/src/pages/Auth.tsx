@@ -67,24 +67,15 @@ const Auth = () => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: fullName,
+            }
+          }
         });
 
         if (error) throw error;
-
-        if (data.user) {
-          // Create profile
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              user_id: data.user.id,
-              full_name: fullName,
-              role: 'user'
-            });
-
-          if (profileError) {
-            console.error('Error creating profile:', profileError);
-          }
-        }
 
         // Check if email is admin email for new accounts
         const isAdminEmail = email.toLowerCase().includes('@g.bracu.ac.bd');
