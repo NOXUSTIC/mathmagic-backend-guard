@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { MapPin, Clock, User, Filter } from 'lucide-react';
+import SafetyTips from './SafetyTips';
 
 interface Incident {
   id: string;
@@ -279,26 +280,33 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
                 )}
               </div>
 
-              {adminView && profile?.role === 'admin' && (
-                <div className="mt-4 pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Update Status:</span>
-                    <Select 
-                      value={incident.status} 
-                      onValueChange={(value) => updateIncidentStatus(incident.id, value)}
-                    >
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="resolved">Resolved</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <SafetyTips 
+                    disasterType={incident.incident_type} 
+                    location={incident.location}
+                  />
+                  
+                  {adminView && profile?.role === 'admin' && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Update Status:</span>
+                      <Select 
+                        value={incident.status} 
+                        onValueChange={(value) => updateIncidentStatus(incident.id, value)}
+                      >
+                        <SelectTrigger className="w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="resolved">Resolved</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         ))}
