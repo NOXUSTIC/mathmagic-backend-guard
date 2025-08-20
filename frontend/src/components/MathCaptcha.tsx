@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { RefreshCw, Calculator } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface MathCaptchaProps {
   onVerified: () => void;
@@ -20,26 +21,37 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
   const generateCaptcha = async () => {
     setGenerating(true);
     try {
+      console.log('Attempting to generate captcha...');
       const { data, error } = await supabase.functions.invoke('captcha', {
         method: 'GET',
       });
+
+      console.log('Captcha response:', { data, error });
 
       if (error) {
         console.error('Error generating captcha:', error);
         throw error;
       }
 
-      if (data.error) {
+      if (data?.error) {
         throw new Error(data.error);
       }
 
-      setQuestion(data.question);
-      setSessionId(data.sessionId);
-      setUserAnswer('');
-      
-      console.log('Generated captcha:', data.question);
+      if (data?.question && data?.sessionId) {
+        setQuestion(data.question);
+        setSessionId(data.sessionId);
+        setUserAnswer('');
+        console.log('Generated captcha successfully:', data.question);
+      } else {
+        throw new Error('Invalid response format from captcha service');
+      }
     } catch (error: any) {
       console.error('Failed to generate captcha:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate captcha. Please try again.",
+        variant: "destructive",
+      });
       onError('Failed to generate captcha. Please try again.');
     } finally {
       setGenerating(false);
@@ -52,8 +64,15 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
       return;
     }
 
+    if (!sessionId) {
+      onError('No captcha session found. Please refresh.');
+      return;
+    }
+
     setLoading(true);
     try {
+      console.log('Attempting to verify captcha with sessionId:', sessionId, 'answer:', userAnswer.trim());
+      
       const { data, error } = await supabase.functions.invoke('captcha', {
         body: {
           sessionId,
@@ -61,16 +80,22 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
         },
       });
 
+      console.log('Verification response:', { data, error });
+
       if (error) {
         console.error('Error verifying captcha:', error);
         throw error;
       }
 
-      if (data.error) {
+      if (data?.error) {
         throw new Error(data.error);
       }
 
-      if (data.success) {
+      if (data?.success === true) {
+        toast({
+          title: "Success",
+          description: "Captcha verified successfully!",
+        });
         onVerified();
       } else {
         onError('Incorrect answer. Please try again.');
@@ -78,6 +103,11 @@ const MathCaptcha = ({ onVerified, onError }: MathCaptchaProps) => {
       }
     } catch (error: any) {
       console.error('Failed to verify captcha:', error);
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Failed to verify captcha. Please try again.",
+        variant: "destructive",
+      });
       onError('Failed to verify captcha. Please try again.');
       await generateCaptcha(); // Generate new captcha on error
     } finally {
