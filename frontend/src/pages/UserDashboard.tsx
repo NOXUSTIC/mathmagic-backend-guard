@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReportForm from '@/components/ReportForm';
 import IncidentList from '@/components/IncidentList';
+import SafetyTips from '@/components/SafetyTips';
 import { AlertTriangle, LogOut, User, Plus, List } from 'lucide-react';
 
 const UserDashboard = () => {
@@ -166,6 +167,11 @@ const UserDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+      </div>
+
+      {/* Floating Safety Tips Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <SafetyTips disasterType="General Emergency" location="Your Area" />
       </div>
     </div>
   );
