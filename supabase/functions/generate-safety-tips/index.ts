@@ -19,33 +19,28 @@ serve(async (req) => {
       throw new Error('Disaster type is required');
     }
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key not configured');
     }
 
     const prompt = `Provide 5-7 concise, actionable safety tips for ${disasterType} disasters${location ? ` in ${location}` : ''}. Focus on immediate safety measures, preparation steps, and emergency response. Format as numbered list with brief, clear instructions.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a disaster preparedness expert. Provide practical, life-saving safety tips that are easy to understand and implement.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.3,
+        contents: [{
+          parts: [{
+            text: `You are a disaster preparedness expert. Provide practical, life-saving safety tips that are easy to understand and implement.\n\n${prompt}`
+          }]
+        }],
+        generationConfig: {
+          maxOutputTokens: 500,
+          temperature: 0.3,
+        }
       }),
     });
 
@@ -55,7 +50,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const safetyTips = data.choices[0].message.content;
+    const safetyTips = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate safety tips at this time.';
 
     return new Response(
       JSON.stringify({ safetyTips }),
