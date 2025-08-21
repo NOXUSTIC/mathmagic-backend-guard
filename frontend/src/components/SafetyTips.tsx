@@ -81,8 +81,8 @@ const SafetyTips = ({ disasterType, location }: SafetyTipsProps) => {
               </CardContent>
             </Card>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              Click to generate safety tips for this disaster type.
+            <div className="text-center py-8 text-muted-foreground">
+              Safety tips will appear here once generated.
             </div>
           )}
         </div>
