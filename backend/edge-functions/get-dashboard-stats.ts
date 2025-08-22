@@ -46,7 +46,7 @@ serve(async (req) => {
 
     // Calculate statistics
     const [incidentsResult, usersResult, resourcesResult] = await Promise.all([
-      supabaseClient.from('incidents').select('id, status').eq('status', 'active'),
+      supabaseClient.from('incident_reports').select('id, status').eq('status', 'active'),
       supabaseClient.from('profiles').select('id'),
       supabaseClient.from('resource_requests').select('id, status').eq('status', 'pending')
     ])
@@ -84,6 +84,6 @@ serve(async (req) => {
 })
 
 async function getTotalReports(supabaseClient: any) {
-  const { data } = await supabaseClient.from('incidents').select('id')
+  const { data } = await supabaseClient.from('incident_reports').select('id')
   return data?.length || 0
 }

@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      incident_reports: {
+        Row: {
+          created_at: string
+          description: string
+          district: string | null
+          id: string
+          image_url: string | null
+          incident_type: string
+          latitude: number | null
+          location: string
+          longitude: number | null
+          status: string
+          title: string
+          updated_at: string
+          urgency_level: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          district?: string | null
+          id?: string
+          image_url?: string | null
+          incident_type: string
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+          urgency_level?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          district?: string | null
+          id?: string
+          image_url?: string | null
+          incident_type?: string
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+          urgency_level?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       incidents: {
         Row: {
           created_at: string

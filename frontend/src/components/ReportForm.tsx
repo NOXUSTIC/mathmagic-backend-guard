@@ -89,7 +89,7 @@ const ReportForm = () => {
 
     try {
       const { error } = await supabase
-        .from('incidents')
+        .from('incident_reports')
         .insert({
           title: formData.title,
           description: formData.description,

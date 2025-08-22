@@ -62,7 +62,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
   const fetchIncidents = async () => {
     try {
       let query = supabase
-        .from('incidents')
+        .from('incident_reports')
         .select(`
           *,
           profiles (full_name)
@@ -90,7 +90,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
       // If the join fails, fetch incidents without profile info
       try {
         let fallbackQuery = supabase
-          .from('incidents')
+          .from('incident_reports')
           .select('*')
           .order('created_at', { ascending: false });
 
@@ -124,7 +124,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
   const updateIncidentStatus = async (incidentId: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('incidents')
+        .from('incident_reports')
         .update({ status: newStatus })
         .eq('id', incidentId);
 

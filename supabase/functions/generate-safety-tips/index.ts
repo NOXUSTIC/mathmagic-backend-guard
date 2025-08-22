@@ -26,29 +26,25 @@ serve(async (req) => {
     // Build conversation context for Gemini API
     const contents = [];
 
-    // Add system message
-    contents.push({
-      parts: [{
-        text: "You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough."
-      }]
-    });
-
-    // Add conversation history - alternate user and model messages
-    conversationHistory.forEach((msg: { role: string; content: string }) => {
-      if (msg.role === 'user') {
-        contents.push({
-          parts: [{ text: msg.content }]
-        });
-      } else if (msg.role === 'assistant') {
-        contents.push({
-          parts: [{ text: msg.content }]
-        });
-      }
-    });
+    // Add conversation history with proper user/model alternation
+    if (conversationHistory.length > 0) {
+      conversationHistory.forEach((msg: { role: string; content: string }) => {
+        if (msg.role === 'user') {
+          contents.push({
+            parts: [{ text: msg.content }]
+          });
+        } else if (msg.role === 'assistant') {
+          // Add model response
+          contents.push({
+            parts: [{ text: msg.content }]
+          });
+        }
+      });
+    }
 
     // Add current user message
     contents.push({
-      parts: [{ text: message }]
+      parts: [{ text: `You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough.\n\nUser question: ${message}` }]
     });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
