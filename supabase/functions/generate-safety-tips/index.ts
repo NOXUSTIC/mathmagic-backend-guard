@@ -23,27 +23,31 @@ serve(async (req) => {
       throw new Error('Gemini API key not configured');
     }
 
-    // Build conversation context
-    const contents = [
-      {
-        parts: [{
-          text: "You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough."
-        }]
-      }
-    ];
+    // Build conversation context for Gemini API
+    const contents = [];
 
-    // Add conversation history - map roles for Gemini API
+    // Add system message
+    contents.push({
+      parts: [{
+        text: "You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough."
+      }]
+    });
+
+    // Add conversation history - alternate user and model messages
     conversationHistory.forEach((msg: { role: string; content: string }) => {
-      const role = msg.role === 'assistant' ? 'model' : 'user';
-      contents.push({
-        role,
-        parts: [{ text: msg.content }]
-      });
+      if (msg.role === 'user') {
+        contents.push({
+          parts: [{ text: msg.content }]
+        });
+      } else if (msg.role === 'assistant') {
+        contents.push({
+          parts: [{ text: msg.content }]
+        });
+      }
     });
 
     // Add current user message
     contents.push({
-      role: 'user',
       parts: [{ text: message }]
     });
 
