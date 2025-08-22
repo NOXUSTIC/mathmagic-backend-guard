@@ -32,15 +32,18 @@ serve(async (req) => {
       }
     ];
 
-    // Add conversation history
+    // Add conversation history - map roles for Gemini API
     conversationHistory.forEach((msg: { role: string; content: string }) => {
+      const role = msg.role === 'assistant' ? 'model' : 'user';
       contents.push({
+        role,
         parts: [{ text: msg.content }]
       });
     });
 
     // Add current user message
     contents.push({
+      role: 'user',
       parts: [{ text: message }]
     });
 
