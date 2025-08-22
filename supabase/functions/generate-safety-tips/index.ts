@@ -12,10 +12,10 @@ serve(async (req) => {
   }
 
   try {
-    const { disasterType, location } = await req.json();
+    const { message, conversationHistory = [] } = await req.json();
 
-    if (!disasterType) {
-      throw new Error('Disaster type is required');
+    if (!message) {
+      throw new Error('Message is required');
     }
 
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
@@ -23,7 +23,26 @@ serve(async (req) => {
       throw new Error('Gemini API key not configured');
     }
 
-    const prompt = `Provide 5-7 concise, actionable safety tips for ${disasterType} disasters${location ? ` in ${location}` : ''}. Focus on immediate safety measures, preparation steps, and emergency response. Format as numbered list with brief, clear instructions.`;
+    // Build conversation context
+    const contents = [
+      {
+        parts: [{
+          text: "You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough."
+        }]
+      }
+    ];
+
+    // Add conversation history
+    conversationHistory.forEach((msg: { role: string; content: string }) => {
+      contents.push({
+        parts: [{ text: msg.content }]
+      });
+    });
+
+    // Add current user message
+    contents.push({
+      parts: [{ text: message }]
+    });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
@@ -31,28 +50,24 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `You are a disaster preparedness expert. Provide practical, life-saving safety tips that are easy to understand and implement.\n\n${prompt}`
-          }]
-        }],
+        contents,
         generationConfig: {
-          maxOutputTokens: 500,
-          temperature: 0.3,
+          maxOutputTokens: 800,
+          temperature: 0.7,
         }
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to generate safety tips');
+      throw new Error(error.error?.message || 'Failed to generate response');
     }
 
     const data = await response.json();
-    const safetyTips = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate safety tips at this time.';
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I apologize, but I cannot generate a response at this time.';
 
     return new Response(
-      JSON.stringify({ safetyTips }),
+      JSON.stringify({ reply }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }

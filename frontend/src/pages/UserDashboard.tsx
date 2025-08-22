@@ -171,7 +171,7 @@ const UserDashboard = () => {
 
       {/* Floating Safety Tips Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <SafetyTips disasterType="General Emergency" location="Your Area" />
+        <SafetyTips />
       </div>
     </div>
   );
