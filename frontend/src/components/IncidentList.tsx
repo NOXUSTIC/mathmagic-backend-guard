@@ -43,16 +43,16 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
   const [sortBy, setSortBy] = useState<string>('time');
 
   const urgencyColors: Record<string, string> = {
-    low: 'bg-green-100 text-green-800',
-    medium: 'bg-yellow-100 text-yellow-800', 
-    high: 'bg-orange-100 text-orange-800',
-    critical: 'bg-red-100 text-red-800'
+    low: 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300',
+    medium: 'bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300', 
+    high: 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300',
+    critical: 'bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-300'
   };
 
   const statusColors: Record<string, string> = {
-    pending: 'bg-gray-100 text-gray-800',
-    in_progress: 'bg-orange-100 text-orange-800',
-    resolved: 'bg-green-100 text-green-800'
+    pending: 'bg-muted text-muted-foreground',
+    in_progress: 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300',
+    resolved: 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300'
   };
 
   useEffect(() => {
@@ -246,7 +246,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{incident.location}</span>
                     {incident.district && (
@@ -255,11 +255,11 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>{new Date(incident.created_at).toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <User className="h-4 w-4" />
                     <span>{incident.profiles?.full_name || 'Anonymous'}</span>
                   </div>
@@ -305,7 +305,7 @@ const IncidentList = ({ userOnly = false, adminView = false }: IncidentListProps
       </div>
 
       {filteredIncidents.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-muted-foreground">
           No incidents found matching the current filters.
         </div>
       )}
