@@ -97,7 +97,7 @@ const SafetyTips = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="shadow-lg border-2">
+        <Button variant="safety" size="sm">
           <Shield className="h-4 w-4 mr-2" />
           Safety Assistant
         </Button>
@@ -105,7 +105,7 @@ const SafetyTips = () => {
       <DialogContent className="max-w-4xl h-[600px] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
+            <Shield className="h-5 w-5 text-safety" />
             AI Safety Assistant
           </DialogTitle>
         </DialogHeader>
@@ -117,12 +117,12 @@ const SafetyTips = () => {
                 <div className={`flex gap-2 max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className="flex-shrink-0">
                     {message.role === 'user' ? (
-                      <User className="h-6 w-6 text-primary" />
+                      <User className="h-6 w-6 text-safety" />
                     ) : (
-                      <Bot className="h-6 w-6 text-primary" />
+                      <Bot className="h-6 w-6 text-safety" />
                     )}
                   </div>
-                  <Card className={message.role === 'user' ? 'bg-primary text-primary-foreground' : ''}>
+                  <Card className={message.role === 'user' ? 'bg-safety text-safety-foreground' : ''}>
                     <CardContent className="p-3">
                       <div className="text-sm whitespace-pre-wrap">
                         {message.content}
@@ -135,7 +135,7 @@ const SafetyTips = () => {
             {loading && (
               <div className="flex gap-3 justify-start">
                 <div className="flex gap-2">
-                  <Bot className="h-6 w-6 text-primary" />
+                  <Bot className="h-6 w-6 text-safety" />
                   <Card>
                     <CardContent className="p-3">
                       <div className="flex items-center gap-2">
