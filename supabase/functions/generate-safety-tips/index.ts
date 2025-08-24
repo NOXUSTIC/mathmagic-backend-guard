@@ -26,25 +26,31 @@ serve(async (req) => {
     // Build conversation context for Gemini API
     const contents = [];
 
+    // Add system message first
+    contents.push({
+      role: 'user',
+      parts: [{ text: 'You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough.' }]
+    });
+
+    contents.push({
+      role: 'model',
+      parts: [{ text: 'I understand. I am a disaster preparedness and safety expert AI assistant. I will help you with questions about emergency preparedness, disaster response, safety tips, and emergency planning by providing practical, actionable advice. How can I help you stay safe today?' }]
+    });
+
     // Add conversation history with proper user/model alternation
     if (conversationHistory.length > 0) {
       conversationHistory.forEach((msg: { role: string; content: string }) => {
-        if (msg.role === 'user') {
-          contents.push({
-            parts: [{ text: msg.content }]
-          });
-        } else if (msg.role === 'assistant') {
-          // Add model response
-          contents.push({
-            parts: [{ text: msg.content }]
-          });
-        }
+        contents.push({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        });
       });
     }
 
     // Add current user message
     contents.push({
-      parts: [{ text: `You are a disaster preparedness and safety expert AI assistant. Help users with questions about emergency preparedness, disaster response, safety tips, and emergency planning. Provide practical, actionable advice that could save lives. Be concise but thorough.\n\nUser question: ${message}` }]
+      role: 'user',
+      parts: [{ text: message }]
     });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
